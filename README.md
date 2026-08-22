@@ -6,7 +6,7 @@ This project implements an **Asynchronous Architecture** utilizing **Python (Fla
 
 ---
 
-## 🏛️ System Architecture
+##  System Architecture
 
 1. **Client Scan Trigger:** Kiosk staff scans an attendee's QR code via `POST /scan`.
 2. **Duplicate Protection Check:** The system verifies the attendee's current state (`NOT_CHECKED_IN`, `PRINT_PENDING`, or `CHECKED_IN`). Duplicate requests are rejected immediately with HTTP 400.
@@ -17,7 +17,7 @@ This project implements an **Asynchronous Architecture** utilizing **Python (Fla
 
 ---
 
-## 🛠️ Technology Stack
+##  Technology Stack
 
 * **Language:** Python 3.x
 * **Framework:** Flask
@@ -26,7 +26,7 @@ This project implements an **Asynchronous Architecture** utilizing **Python (Fla
 
 ---
 
-## 🚀 Setup & Installation
+##  Setup & Installation
 
 ### 1. Prerequisites
 Ensure you have Python 3.x and Git installed on your system.
@@ -54,10 +54,10 @@ Test Coverage:
  * Scenario 1: Standard Asynchronous Flow (Instant HTTP 202 response + background webhook execution).
  * Scenario 2: Immediate Duplicate Scan Guard (Blocks re-scans with HTTP 400 while status is PRINT_PENDING).
  * Scenario 3: Post-Check-In Duplicate Guard (Blocks re-scans with HTTP 400 after state becomes CHECKED_IN).
-📊 REST API Reference
+### 📊 REST API Reference
 
 | Endpoint | Method | Payload | Status Code | Description |
-|---|---|---|---|---|
-| /scan | POST | {"attendee_id": "ATT001"} | 202 Accepted | Queues badge print job & sets state to PRINT_PENDING. |
-| /webhook/print-completed | POST | {"attendee_id": "ATT001", "status": "SUCCESS"} | 200 OK | Webhook callback received from worker; updates state to CHECKED_IN. |
-| /attendee/<id> | GET | None | 200 OK | Returns current database state for an attendee. |
+| :--- | :--- | :--- | :--- | :--- |
+| `/scan` | POST | `{"attendee_id": "ATT001"}` | 202 Accepted | Queues badge print job & sets state to PRINT_PENDING. |
+| `/webhook/print-completed` | POST | `{"attendee_id": "ATT001", "status": "SUCCESS"}` | 200 OK | Webhook callback received. |
+| `/attendee/<id>` | GET | None | 200 OK | Returns current database state for an attendee. |
