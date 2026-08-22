@@ -33,9 +33,9 @@ To comply with the deprecation of the synchronous badge-printing API by our thir
 
 ## Refactored Backlog Items
 
-1. **[Core Backend]** Update `POST /scan` to return `202 Accepted` and enqueue task payload to Redis `print_queue`.
-2. **[Webhook Ingestion]** Build `POST /webhook/print-completed` route to update database record from `PRINT_PENDING` to `CHECKED_IN`.
-3. **[Security Guard]** Enforce strict state check returning `HTTP 400 Bad Request` on duplicate scans during in-flight printing or post-check-in states.
-4. **[Automated Validation]** Implement `test_scenarios.py` to end-to-end verify non-blocking ingestion, duplicate rejection, and final state transition across 3 test attendees.
-5.
+1. **Core Backend** Update `POST /scan` to return `202 Accepted` and enqueue task payload to Redis `print_queue`.
+2. **Webhook Ingestion** Build `POST /webhook/print-completed` route to update database record from `PRINT_PENDING` to `CHECKED_IN`.
+3. **Security Guard** Enforce strict state check returning `HTTP 400 Bad Request` on duplicate scans during in-flight printing or post-check-in states.
+4. **Automated Validation** Implement `test_scenarios.py` to end-to-end verify non-blocking ingestion, duplicate rejection, and final state transition across 3 test attendees.
+  
 
