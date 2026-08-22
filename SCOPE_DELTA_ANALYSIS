@@ -1,1 +1,34 @@
+# Scope Delta Analysis: Meridian Kiosk Pivot
+
+**Project:** Solstice Events Co. – Meridian Kiosk Check-In  
+**Sprint Phase:** Mid-Sprint Architecture Refactor  
+ 
+
+## Executive Summary
+
+To comply with the deprecation of the synchronous badge-printing API by our third-party vendor, the Meridian Kiosk check-in service was refactored from a synchronous REST architecture to an event-driven, asynchronous model using Redis message queues and Webhook callbacks. This document outlines the explicit scope changes, feature modifications, and trade-offs executed to meet deadline constraints.
+
+
+## Scope Delta Breakdown
+
+| Feature / Task | Action | Original Specification | Refactored Pivot Specification |
+| :--- | :--- | :--- | :--- |
+| **Synchronous REST API Call** | **Dropped** | `POST /scan` held the HTTP connection open for 3 seconds waiting for vendor print completion. | Removed blocking HTTP thread execution. Requests immediately publish print jobs to a Redis message queue. |
+| **Instant "Checked In" UI State** | **Dropped** | UI immediately rendered `CHECKED_IN` upon receiving a `200 OK` from the print API. | Intermediate status `PRINT_PENDING` introduced to reflect queued status before physical print confirmation. |
+| **Redis Message Queue Worker** | **Added** | N/A (Direct external API call). | Added `tasks.py` worker to ingest print payloads asynchronously off the queue and trigger printing out-of-band. |
+| **Webhook Receiver Endpoint** | **Added** | N/A. | Created `POST /webhook/print-completed` route to accept out-of-band completion events from the vendor. |
+| **Duplicate Scan Guard** | **Modified** | Blocked re-scans only if status was equal to `CHECKED_IN`. | Extended state validation to block incoming scans if status is **either** `PRINT_PENDING` or `CHECKED_IN` (`400 Bad Request`). |
+
+
+## Architectural Impact & Trade-Offs
+
+* **Reduced Latency vs. System Decoupling:** UI response times dropped from ~3,000ms to <50ms (`HTTP 202 Accepted`), vastly improving kiosk throughput. However, system complexity increased due to introducing Redis worker processes alongside the Flask API.
+* **Out-of-Order Webhook Protection:** Webhook callbacks can land out of sequence. Race conditions are mitigated by locking the attendee status to `PRINT_PENDING` *at the moment of initial ingestion* rather than waiting for worker execution.
+
+## Refactored Backlog Items
+
+1. **[Core Backend]** Update `POST /scan` to return `202 Accepted` and enqueue task payload to Redis `print_queue`.
+2. **[Webhook Ingestion]** Build `POST /webhook/print-completed` route to update database record from `PRINT_PENDING` to `CHECKED_IN`.
+3. **[Security Guard]** Enforce strict state check returning `HTTP 400 Bad Request` on duplicate scans during in-flight printing or post-check-in states.
+4. **[Automated Validation]** Implement `test_scenarios.py` to end-to-end verify non-blocking ingestion, duplicate rejection, and final state transition across 3 test attendees.
 
