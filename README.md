@@ -55,6 +55,7 @@ Test Coverage:
  * Scenario 2: Immediate Duplicate Scan Guard (Blocks re-scans with HTTP 400 while status is PRINT_PENDING).
  * Scenario 3: Post-Check-In Duplicate Guard (Blocks re-scans with HTTP 400 after state becomes CHECKED_IN).
 📊 REST API Reference
+
 | Endpoint | Method | Payload | Status Code | Description |
 |---|---|---|---|---|
 | /scan | POST | {"attendee_id": "ATT001"} | 202 Accepted | Queues badge print job & sets state to PRINT_PENDING. |
